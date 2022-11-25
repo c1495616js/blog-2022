@@ -19,6 +19,7 @@ type PostForPostPage = PostForPostLayout & {
   socialImage: string | null;
   body: {
     code: string;
+    raw: string;
   };
 };
 
@@ -62,6 +63,7 @@ export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
     socialImage: postFull.socialImage || null,
     body: {
       code: postFull.body.code,
+      raw: postFull.body.raw,
     },
   };
 

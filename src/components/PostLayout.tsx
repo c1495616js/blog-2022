@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import CustomLink from '@/components/CustomLink';
 import PageTitle from '@/components/PageTitle';
 import PostBody from '@/components/PostBody';
+import TableOfContents from '@/components/TableOfContents';
 import formatDate from '@/lib/formatDate';
 
 export interface PostForPostLayout {
@@ -28,7 +29,11 @@ export default function PostLayout({
   prevPost,
   children,
 }: Props) {
-  const { date, title } = post;
+  const {
+    date,
+    title,
+    body: { raw },
+  } = post;
 
   const { locale } = useRouter();
 
@@ -43,7 +48,7 @@ export default function PostLayout({
 
             <dl className="space-y-10">
               <div>
-                <dt className="sr-only">發佈時間</dt>
+                <dt className="sr-only">Published at:</dt>
                 <dd className="text-base font-medium leading-6 text-gray-500 transition-colors dark:text-gray-400">
                   <time dateTime={date}>{formatDate(date, locale)}</time>
                 </dd>
@@ -52,14 +57,25 @@ export default function PostLayout({
           </div>
         </header>
 
-        <div className="divide-y divide-gray-200 pt-10 pb-8 transition-colors dark:divide-gray-700">
-          <PostBody>{children}</PostBody>
+        {/* body */}
+        <div
+          className="pb-8 transition-colors lg:grid lg:grid-cols-4 lg:gap-x-6"
+          style={{ gridTemplateRows: 'auto 1fr' }}
+        >
+          <div className="divide-y divide-gray-200 pt-10 pb-8 transition-colors dark:divide-gray-700 lg:col-span-3">
+            <PostBody>{children}</PostBody>
+          </div>
+
+          {/* DESKTOP TABLE OF CONTENTS */}
+          <aside>
+            <div className="hidden lg:sticky lg:top-24 lg:col-span-1 lg:block">
+              <TableOfContents source={raw} />
+            </div>
+          </aside>
         </div>
 
-        <div
-          className="divide-y divide-gray-200 pb-8 transition-colors dark:divide-gray-700"
-          // style={{ gridTemplateRows: 'auto 1fr' }}
-        >
+        {/* footer */}
+        <div className="divide-y divide-gray-200 pb-8 transition-colors dark:divide-gray-700">
           <footer>
             <div className="flex flex-col gap-4 pt-4 text-base font-medium sm:flex-row sm:justify-between xl:gap-8 xl:pt-8">
               {prevPost ? (
