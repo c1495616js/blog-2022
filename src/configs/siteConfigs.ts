@@ -15,4 +15,6 @@ export const siteConfigs = {
   bannerUrl: fqdn + bannerPath,
   twitterID: '@c1495616',
   datePublished: '2022-11-24',
+  credit: 'Jerry Wang',
+  email: 'c1495616@gmail.com',
 };
