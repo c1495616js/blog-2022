@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "run-p build:*",
+    "build": "next build && next buildnext-sitemap --config next-sitemap.config.js",
     "build:app": "next build",
     "build:sitemap": "next-sitemap --config next-sitemap.config.js",
     "start": "next start",
