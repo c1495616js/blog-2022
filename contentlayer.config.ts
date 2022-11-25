@@ -3,6 +3,7 @@ import { defineDocumentType, makeSource } from './src/lib/contentLayerAdapter';
 import rehypePrism from 'rehype-prism-plus';
 import rehypeCodeTitles from 'rehype-code-titles';
 import rehypeSlug from 'rehype-slug';
+import imageMetadata from './src/plugins/imageMetadata';
 
 export const Post = defineDocumentType(() => ({
   name: 'Post',
@@ -45,6 +46,7 @@ export default makeSource({
       rehypeSlug, // For generating slugs for headings
       rehypeCodeTitles, // For adding titles to code blocks
       [rehypePrism, { ignoreMissing: true }], // For code syntax highlighting
+      imageMetadata, // For adding image metadata (width, height)
     ],
   },
 });
