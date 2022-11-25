@@ -7,6 +7,7 @@ import {
   CustomH5,
   CustomH6,
 } from '@/components/CustomHeading';
+import CustomLink from '@/components/CustomLink';
 
 const mdxComponents = {
   h1: CustomH1,
@@ -16,6 +17,7 @@ const mdxComponents = {
   h5: CustomH5,
   h6: CustomH6,
   pre: CustomPre,
+  a: CustomLink,
 };
 
 export default mdxComponents;
