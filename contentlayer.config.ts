@@ -7,6 +7,7 @@ import readingTime from 'reading-time';
 
 import imageMetadata from './src/plugins/imageMetadata';
 import embed from './src/plugins/embed';
+import videoPlugin from './src/plugins/video';
 
 export const Post = defineDocumentType(() => ({
   name: 'Post',
@@ -44,13 +45,14 @@ export const Post = defineDocumentType(() => ({
     },
     path: {
       type: 'string',
-      resolve: (post) => `/posts/${post.slug}`,
+      resolve: (doc) =>
+        `/posts/${doc._raw.sourceFileName.replace(/\.mdx$/, '')}`,
     },
   },
 }));
 
 export default makeSource({
-  contentDirPath: 'content',
+  contentDirPath: 'content/posts',
   documentTypes: [Post],
   mdx: {
     rehypePlugins: [
@@ -59,6 +61,6 @@ export default makeSource({
       [rehypePrism, { ignoreMissing: true }], // For code syntax highlighting
       imageMetadata, // For adding image metadata (width, height)
     ],
-    remarkPlugins: [embed],
+    remarkPlugins: [[videoPlugin]],
   },
 });
