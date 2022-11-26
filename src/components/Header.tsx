@@ -3,6 +3,7 @@ import MobileNav from '@/components/MobileNav';
 import SectionContainer from '@/components/SectionContainer';
 import ThemeSwitch from '@/components/ThemeSwitch';
 import { headerConfigs } from '@/configs/headerConfigs';
+import CommandPaletteToggle from '@/components/CommandPaletteToggle';
 
 export default function Header() {
   return (
@@ -33,6 +34,7 @@ export default function Header() {
             </div>
 
             <ThemeSwitch />
+            <CommandPaletteToggle />
             <MobileNav />
           </div>
         </div>
