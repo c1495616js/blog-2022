@@ -8,8 +8,9 @@ import formatDate from '@/lib/formatDate';
 import Comment from '@/components/Comment';
 
 export interface PostForPostLayout {
-  date: string;
+  publishedAt: string;
   title: string;
+  body: { raw: string };
 }
 
 export type RelatedPostForPostLayout = {
@@ -31,7 +32,7 @@ export default function PostLayout({
   children,
 }: Props) {
   const {
-    date,
+    publishedAt,
     title,
     body: { raw },
   } = post;
@@ -51,7 +52,9 @@ export default function PostLayout({
               <div>
                 <dt className="sr-only">Published at:</dt>
                 <dd className="text-base font-medium leading-6 text-gray-500 transition-colors dark:text-gray-400">
-                  <time dateTime={date}>{formatDate(date, locale)}</time>
+                  <time dateTime={publishedAt}>
+                    {formatDate(publishedAt, locale)}
+                  </time>
                 </dd>
               </div>
             </dl>

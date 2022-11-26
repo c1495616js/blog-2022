@@ -1,0 +1,78 @@
+---
+title: Embedd with Mdx-Bundler
+description: Showing how to embed codesandbox or youtube, etc in mdx with Mdx-Bundler
+slug: embedd-with-mdx-bundler
+publishedAt: '2022-08-12'
+tags: ['react', 'mdx']
+image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'
+isPublished: true
+type: Post
+---
+
+## Description
+
+Showing how to embed codesandbox or youtube, etc in mdx with Mdx-Bundler
+
+## Code
+
+```bash
+npm i @remark-embedder/core @remark-embedder/transformer-oembed
+```
+
+<br />
+
+```ts showLineNumbers {10-15}
+import remarkEmbedder from '@remark-embedder/core';
+import oembedTransformer from '@remark-embedder/transformer-oembed';
+
+await bundleMDX({
+    source,
+    mdxOptions(options) {
+      options.remarkPlugins = [
+        ...(options.remarkPlugins ?? []),
+
+        [
+          remarkEmbedder,
+          {
+            transformers: [oembedTransformer],
+          },
+        ],
+      ];
+```
+
+OR export plugin from different file.
+
+```ts
+import remarkEmbedder from '@remark-embedder/core';
+import oembedTransformer from '@remark-embedder/transformer-oembed';
+import type { Pluggable } from 'unified';
+
+const plugin: Pluggable<any[]> = [
+  remarkEmbedder,
+  {
+    transformers: [oembedTransformer],
+  },
+];
+
+export default plugin;
+```
+
+Then simply put the link in your `.mdx` file.
+
+```md
+https://codesandbox.io/s/pjqnl16lm7
+
+https://www.youtube.com/watch?v=GN0xHSk2P8Q
+```
+
+## Demo
+
+https://codesandbox.io/s/pjqnl16lm7
+
+<br />
+
+https://www.youtube.com/watch?v=GN0xHSk2P8Q
+
+## Refs
+
+- https://github.com/kentcdodds/mdx-bundler/issues/92

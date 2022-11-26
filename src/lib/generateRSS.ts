@@ -36,7 +36,7 @@ export default function generateRSS() {
       image: post.socialImage ? getPostOGImage(post.socialImage) : '',
       author: [author],
       contributor: [author],
-      date: new Date(post.date),
+      date: new Date(post.publishedAt),
       // content: post.body.html,
     });
   });

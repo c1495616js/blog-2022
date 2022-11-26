@@ -1,0 +1,74 @@
+---
+title: Remix Global Loader
+description: Global spinner implementation in Remix.
+slug: remix-global-loader
+publishedAt: '2022-07-18'
+tags: ['remix', 'react']
+image: 'https://images.unsplash.com/photo-1511495997152-24fe970c7045?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
+isPublished: true
+type: Post
+---
+
+## Description
+
+This is the custom hook of Global loader in `Remix`.
+We use `remix-utils` and `react-hot-toast` packages.
+
+## Setup
+
+```
+npm install react-hot-toast remix-utils
+```
+
+## Code
+
+```ts filename=useProgress.ts
+import React from 'react';
+import { useGlobalPendingState } from 'remix-utils';
+import toast from 'react-hot-toast';
+
+function useProgress() {
+  let globalState = useGlobalPendingState();
+  const toastRef = React.useRef<string | null>(null);
+
+  function cleanToast() {
+    if (toastRef.current) {
+      toast.dismiss(toastRef.current);
+      toastRef.current = null;
+    }
+  }
+
+  React.useEffect(() => {
+    if (globalState === 'idle') {
+      cleanToast();
+    } else {
+      if (!toastRef.current) {
+        const toastId = toast.loading('Loading...');
+        toastRef.current = toastId;
+      }
+    }
+  }, [globalState]);
+}
+
+export { useProgress };
+```
+
+And don't forget to put `<Toaster />` at Index page and called `useProgress()`.
+For example,
+
+On `__app.tsx`,
+
+```ts
+import { Toaster } from 'react-hot-toast';
+
+export default function Index() {
+  useProgress();
+
+  return (
+    <Layout>
+      <Toaster />
+      <Outlet />
+    </Layout>
+  );
+}
+```

@@ -25,7 +25,7 @@ export const getStaticProps: GetStaticProps<Props> = () => {
 
   const posts = allPostsNewToOld.map((post) => ({
     slug: post.slug,
-    date: post.date,
+    publishedAt: post.publishedAt,
     title: post.title,
     description: post.description,
     path: post.path,

@@ -1,0 +1,146 @@
+---
+title: Let's talk about useEffect
+description: A detail exploration of the hook useEffect
+slug: use-effect
+publishedAt: '2022-08-11'
+tags: ['react']
+image: 'https://images.unsplash.com/photo-1591267990532-e5bdb1b0ceb8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1127&q=80'
+isPublished: true
+type: Post
+---
+
+## TLDR;
+
+- `useEffect` is according to the current `props` and `state` to syncronize the "things" out of `React elements`, and avoid
+  blocking the UI rendering.
+- In theory, your component should stay syncronize and work normally no matter how many times this `effect` is executed.
+- `useEffect` is a syncronize behavior to respond the `data` changed.
+- every render has its own `effect`.
+- `dependencies` is just a way to optimize the `useEffect`.
+
+## Class Component V.S. Function Component
+
+https://codesandbox.io/s/pjqnl16lm7
+
+- `this` is a mutable object in every render.
+- `class component` is based on OOP, use `mutate` to access `this.props` and `this.state`.
+- `function component` is based on FP, every time exec the function with independent parameters to access `props` and `state`.
+  i.e. every render has its own props and state.
+- If the value is mutated by outer scope, then the `closure` is difficult to predict.
+  However, if the value is a constant, then the closure is easy to understand.
+
+## useEffect
+
+- `event handler`, `effects`, `cleanup`, `timeout` and any api will catch the `props` and `state` which are from that `render`.
+
+### cleanup function
+
+- The cleanup function is not executed immediately in this time render.
+- The cleanup function will be executed when the next time render function calling this effect and it's before the callback.
+- That's why use `return cleanup function`, as it needs to save it for the next time rendering.
+
+```ts
+useEffect(
+  // Effect of first time render, props: {id: 10}
+  () => {
+    ChatAPI.subscribe(10, handleChange);
+    // clean the effect of first time render
+    return () => {
+      ChatAPI.unsubscribe(10, handleChange);
+    };
+  }
+
+  ---
+
+   // Effect of second time rende, props: {id: 20}r
+  () => {
+    ChatAPI.subscribe(20, handleChange);
+    // clean the effect of second time render
+    return () => {
+      ChatAPI.unsubscribe(20, handleChange);
+    };
+  }
+);
+```
+
+### You need to FORGET about the `Life Cycle`
+
+- Declaration Syncronization:
+
+  - If my input data is same, then it doesn't matter how many times I calculate should be the same.
+  - Only care about the result, but not the detail.
+  - when we call `setState`, react will use the new data to render `React elements` on the screen and syncronize to the `DOM`.
+    For the `render`, there is no difference between the `mount` and `update`.
+
+- `useEffect` is according to the current `props` and `state` to syncronize the "things" out of `React elements`, and avoid
+  blocking the UI rendering. So, it's not the `Life Cycle`.
+- In theory, your component should stay syncronize and work normally no matter how many times this `effect` is executed.
+
+```ts
+function Greeting({ name }) {
+  useEffect(() => {
+    document.title = 'Hello, ' + name;
+  });
+  return <h1 className="Greeting">Hello, {name}</h1>;
+}
+```
+
+- effect and cleanup is executed after the `render` to avoid blocking the UI rendering.
+
+```ts
+function FriendStatus(props) {
+  // ...
+  useEffect(() => {
+    // ...
+    ChatAPI.subscribeToFriendStatus(
+      props.friend.id,
+      handleStatusChange
+    );
+    return () => {
+      ChatAPI.unsubscribeFromFriendStatus(
+        props.friend.id,
+        handleStatusChange
+      );
+    };
+  });
+```
+
+```ts
+// Mount with { friend: { id: 100 } } props
+ChatAPI.subscribeToFriendStatus(100, handleStatusChange); // execute first effect
+
+// Update with { friend: { id: 200 } } props
+ChatAPI.unsubscribeFromFriendStatus(100, handleStatusChange); // clean previous effect
+ChatAPI.subscribeToFriendStatus(200, handleStatusChange); // execute next effect
+
+// Update with { friend: { id: 300 } } props
+ChatAPI.unsubscribeFromFriendStatus(200, handleStatusChange); // clean previous effect
+ChatAPI.subscribeToFriendStatus(300, handleStatusChange); // execute next effect
+
+// Unmount
+ChatAPI.unsubscribeFromFriendStatus(300, handleStatusChange); // clean the final effect
+```
+
+### Dependencies is just optimization
+
+- if the data in this dependencies list have no change, then there is no need to run this effect.
+
+## Summarize of useEffect mental modal
+
+- Function component 沒有生命週期的 API，只有 useEffect 用於「同步資料到 effect 行為」
+- useEffect 讓你根據目前的資料來同步 React elements（畫面）以外的任何事物
+- 在一般情況下，useEffect 會在每次 component render 然後瀏覽器完成 DOM 的更新 & 繪製畫面後才執行，以避免阻塞 component render 的過程 & 瀏覽器繪製畫面的過程
+- useEffect 在概念上並不區分 mount 與 update 的情況，它們被視為是同一種情境
+- 預設情況下，每一次 render 後都應該執行屬於該 render 的 useEffect，來確保同步的正確性與完整性
+- 理想上這個 useEffect 無論隨著 render 重新執行了幾次，你的程式都應該保持同步且正常運作
+- useEffect 的 dependencies 是一種「忽略某些不必要的執行」的效能最佳化，而不是用來控制 effect 發生在特定的 component 生命週期，或特定的商業邏輯時機
+
+## Do not cheat the dependencies
+
+https://codesandbox.io/s/91n5z8jo7r
+
+## Refs
+
+https://www.youtube.com/watch?v=v9M20STEjgc
+
+- https://slides.com/tz5514/useeffect-guide?fbclid=IwAR0xuivk6dhbXfJt_qy3hLlhAxUPvnD9MwPBZrZAbMltUjvIkDr_Tp4CAms

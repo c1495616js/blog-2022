@@ -19,7 +19,7 @@ import { useCommandPalettePostActions } from '@/components/CommandPalette/useCom
 type PostForPostPage = PostForPostLayout & {
   title: string;
   description: string;
-  date: string;
+  publishedAt: string;
   path: string;
   socialImage: string | null;
   body: {
@@ -65,7 +65,7 @@ export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
   const postFull = allPostsNewToOld[postIndex];
   const post: PostForPostPage = {
     title: postFull.title,
-    date: postFull.date,
+    publishedAt: postFull.publishedAt,
     description: postFull.description,
     path: postFull.path,
     socialImage: postFull.socialImage || null,
@@ -99,7 +99,7 @@ const PostPage: NextPage<Props> = ({
   const {
     description,
     title,
-    date,
+    publishedAt,
     path,
     socialImage,
     body: { code },
@@ -128,8 +128,8 @@ const PostPage: NextPage<Props> = ({
           ],
           type: 'article',
           article: {
-            publishedTime: date,
-            modifiedTime: date,
+            publishedTime: publishedAt,
+            modifiedTime: publishedAt,
           },
         }}
       />
@@ -138,8 +138,8 @@ const PostPage: NextPage<Props> = ({
         url={url}
         title={title}
         images={[ogImage]}
-        datePublished={date}
-        dateModified={date}
+        datePublished={publishedAt}
+        dateModified={publishedAt}
         authorName={siteConfigs.author}
         description={description}
       />

@@ -1,0 +1,850 @@
+---
+title: Build blog with mdx
+description: Building blog with mdx.
+slug: build-blog-with-mdx
+publishedAt: '2022-07-28'
+tags: ['mdx', 'react']
+image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
+isPublished: true
+type: Post
+---
+
+## Description
+
+It's easier to write in markdown when writing the blog.
+Therefore, would like to build a blog with `.mdx`.
+Can check the code of this blog in github for detail to see how I implement it.
+
+## Setup
+
+For example, I use server-side-rendering framework `remix-run`.
+You can use `next.js` as well.
+
+### frontmatter
+
+Frontmatter is the meta data we put in the `.mdx`.
+
+```md
+---
+title: Build blog with mdx
+description: Building blog with mdx.
+publishedAt: '2022-07-28'
+tags: ['mdx', 'react']
+image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
+isPublished: true
+---
+```
+
+And we can set the `type`.
+
+```ts fileName='type/index.ts'
+export type Frontmatter = {
+  title: string;
+  description: string;
+  publishedAt: string;
+  updatedAt?: string;
+  tags: string[];
+  isPublished: boolean;
+  image?: string;
+  slug: string;
+  readingTime?: { text: string; minutes: number; time: number; words: number };
+};
+```
+
+### api
+
+#### For digest `mdx` with `frontmatter`
+
+```bash
+npm i front-matter mdx-bundler reading-time
+```
+
+#### For highlight code
+
+```bash
+npm i remark-gf rehype-autolink-headings rehype-code-title rehype-prism-plus rehype-slug rehype-toc
+```
+
+- [globby](https://www.npmjs.com/package/globby)
+
+To get all the match file path.
+
+```ts
+import fs from 'fs/promises';
+import path from 'path';
+import globby from 'globby';
+import readingTime from 'reading-time'; // optional
+import { bundleMDX } from 'mdx-bundler';
+
+import type { Frontmatter } from '~/types';
+
+/**
+ * path to the blog articles
+ */
+const MDX_PATH = 'blog';
+
+/**
+ * fetch all articles with frontMatters
+ */
+export async function getAllFrontMatters(): Promise<Frontmatter[]> {
+  const paths = await globby([`${MDX_PATH}/**/*.mdx`]);
+
+  const matters = await Promise.all(
+    paths.map(async (filePath) => {
+      const source = await fs.readFile(path.join(filePath), 'utf8');
+      const { code, frontmatter } = await bundleMDX({ source });
+      return {
+        ...(frontmatter as Frontmatter),
+        slug: path.basename(filePath).replace('.mdx', ''),
+        readingTime: readingTime(code, { wordsPerMinute: 300 }),
+      };
+    })
+  );
+
+  return matters
+    .filter(Boolean)
+    .filter((post) => post.isPublished)
+    .sort(
+      (a, b) =>
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    );
+}
+
+/**
+ * fetch single article with slug (file name as url path)
+ */
+export async function getPost(slug: string) {
+  const source = await fs.readFile(path.join(MDX_PATH, slug + '.mdx'), 'utf-8');
+
+  const { default: rehypePrism } = await import('rehype-prism-plus');
+  const { default: remarkGfm } = await import('remark-gfm');
+  const { default: rehypeAutolinkHeadings } = await import(
+    'rehype-autolink-headings'
+  );
+
+  const { default: rehypeToc } = await import('rehype-toc');
+  const { default: rehypeSlug } = await import('rehype-slug');
+
+  const post = await bundleMDX({
+    source,
+    mdxOptions(options) {
+      options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm];
+      options.rehypePlugins = [
+        ...(options.rehypePlugins ?? []),
+        rehypeAutolinkHeadings,
+        rehypeSlug,
+        rehypeToc,
+        rehypePrism,
+      ];
+
+      return options;
+    },
+  }).catch((e) => {
+    console.error(e);
+    throw e;
+  });
+
+  return post;
+}
+```
+
+#### For component
+
+- Can customize `mdxComponent`
+
+Codeblock
+
+```ts
+import React, { useRef, useState } from 'react';
+import classNames from 'clsx';
+import type { FC } from 'react';
+
+interface Props {
+  className: string;
+  id: string;
+}
+
+const Code: FC<Props> = ({ children, className, id }) => {
+  const textInput = useRef(null);
+  const [hovered, setHovered] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const childs = React.Children.toArray(children);
+
+  const onEnter = () => {
+    /**
+     * if only highlight by ``, then no show the hover state copy button
+     */
+    if (childs.length === 1 && typeof childs[0] === 'string') {
+      return;
+    }
+    setHovered(true);
+  };
+  const onExit = () => {
+    setHovered(false);
+    setCopied(false);
+  };
+  const onCopy = () => {
+    setCopied(true);
+    navigator.clipboard.writeText(textInput.current.textContent);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
+
+  return (
+    <code
+      ref={textInput}
+      onMouseEnter={onEnter}
+      onMouseLeave={onExit}
+      className={classNames('', className)}
+      id={id}
+    >
+      {hovered && (
+        <button
+          aria-label="Copy code"
+          type="button"
+          className={`absolute right-2 top-2 z-10 h-8 w-8 rounded border-2 bg-gray-700 p-1 dark:bg-gray-800 ${
+            copied
+              ? 'border-green-400 focus:border-green-400 focus:outline-none'
+              : 'border-gray-300'
+          }`}
+          onClick={onCopy}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            fill="none"
+            className={copied ? 'text-green-400' : 'text-gray-300'}
+          >
+            {copied ? (
+              <>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                />
+              </>
+            ) : (
+              <>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </>
+            )}
+          </svg>
+        </button>
+      )}
+
+      {children}
+    </code>
+  );
+};
+
+export default Code;
+```
+
+```ts
+import classNames from 'clsx';
+
+import React from 'react';
+
+import Code from './Code';
+
+const MdxComponents = {
+  // Image,
+  a: ({ href = '', ...props }) => {
+    if (href.startsWith('http')) {
+      return (
+        <a
+          {...props}
+          className="text-fore-subtle hover:text-accent focus-visible:outline-accent focus-visible:text-accent break-words underline"
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+      );
+    }
+
+    if (href.startsWith('#')) {
+      return (
+        <a
+          {...props}
+          href={href}
+          className="hover:text-accent focus-visible:outline-accent focus-visible:text-accent ml-1 origin-left scale-0 transform text-[#6EE7B7] transition-transform duration-75 ease-out hover:text-[#FA5252] group-hover:scale-100 group-hover:opacity-100"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M9.243 3.03a1 1 0 01.727 1.213L9.53 6h2.94l.56-2.243a1 1 0 111.94.486L14.53 6H17a1 1 0 110 2h-2.97l-1 4H15a1 1 0 110 2h-2.47l-.56 2.242a1 1 0 11-1.94-.485L10.47 14H7.53l-.56 2.242a1 1 0 11-1.94-.485L5.47 14H3a1 1 0 110-2h2.97l1-4H5a1 1 0 110-2h2.47l.56-2.243a1 1 0 011.213-.727zM9.03 8l-1 4h2.938l1-4H9.031z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span>{props.children}</span>
+        </a>
+      );
+    }
+
+    return (
+      <a
+        {...props}
+        href={href}
+        className="text-fore-subtle hover:text-accent focus-visible:outline-accent focus-visible:text-accent break-words underline"
+      />
+    );
+  },
+  strong: ({ ...props }) => <strong {...props} className="font-semibold" />,
+  h2: ({ ...props }) => {
+    return (
+      <h2
+        {...props}
+        data-heading
+        className="text-accent group mb-8 mt-14 flex items-baseline text-2xl font-bold leading-10 text-[#FA5252] lg:text-3xl"
+      />
+    );
+  },
+  h3: ({ ...props }) => {
+    return (
+      <h3
+        {...props}
+        data-heading
+        className="text-accent group mb-4 mt-14 flex items-baseline text-xl font-bold leading-tight text-[#FA5252]"
+      />
+    );
+  },
+  h4: ({ ...props }) => {
+    return (
+      <h4
+        {...props}
+        data-heading
+        className="text-accent group mb-4 mt-14 flex items-baseline text-lg font-bold leading-tight text-[#FA5252]"
+      />
+    );
+  },
+  p: ({ ...props }) => {
+    return <p {...props} className="my-6 leading-7 lg:leading-8" />;
+  },
+  code: ({ children, showLineNumbers, fileName, id }: any) => {
+    return (
+      <>
+        <Code
+          className={classNames('', {
+            'line-numbers': showLineNumbers !== undefined,
+          })}
+          id={id}
+        >
+          {fileName && <div className="code-filename w-full">{fileName}</div>}
+          {children}
+        </Code>
+      </>
+    );
+  },
+  em: ({ ...props }) => {
+    return <em {...props} className="italic" />;
+  },
+  hr: ({ ...props }) => {
+    return <hr {...props} className="border-accent my-10" />;
+  },
+  blockquote: ({ ...props }) => {
+    return (
+      <blockquote
+        {...props}
+        className="bg-back-secondary border-accent my-6 border-l-2 px-5 py-2 text-base lg:-ml-6"
+      />
+    );
+  },
+  ul: (props: any) => (
+    <ul className="mb-4 list-inside list-disc leading-relaxed" {...props} />
+  ),
+  ol: (props: any) => (
+    <ol className="my-6 list-decimal pl-4 leading-7" {...props} />
+  ),
+  li: (props: any) => <li className="mt-3" {...props} />,
+  CodeLink: ({ id, index, href, children, ...props }: any) => {
+    const isExternal = href.startsWith('http');
+    React.useEffect(() => {
+      const codeblock = document.getElementById(id);
+      if (!codeblock) return;
+
+      const allHighlightWords = codeblock.querySelectorAll('.highlight-word');
+      const target = allHighlightWords[index - 1];
+      if (!target) return;
+
+      target.replaceWith(
+        Object.assign(document.createElement('a'), {
+          href,
+          innerHTML: target.innerHTML,
+          className: target.className,
+          ...(isExternal ? { target: '_blank', rel: 'noopener' } : {}),
+        })
+      );
+    }, []);
+
+    return null;
+  },
+};
+
+export default MdxComponents;
+```
+
+- rendering the markdown
+
+```tsx
+import { getMDXComponent } from 'mdx-bundler/client';
+import { useMemo } from 'react';
+import type { LoaderFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
+
+import { getPost, getRemotePost } from '~/api/read-post.server';
+import { useLoaderData } from '@remix-run/react';
+import MdxComponents from '~/components/routes/blog/MdxComponents';
+import imgPlaceholder from '~/assets/images/blog_images/1.jpg';
+import Comments from '~/components/routes/blog/Comments';
+
+type LoaderData = {
+  frontmatter: any;
+  code: string;
+};
+
+export function links() {
+  return [
+    { rel: 'preload', href: 'https://utteranc.es/client.js', as: 'script' },
+  ];
+}
+
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const slug = params.slug;
+
+  if (!slug) throw new Response('Not found', { status: 404 });
+
+  const post =
+    process.env.NODE_ENV === 'development'
+      ? await getPost(slug)
+      : await getRemotePost(slug);
+  if (post) {
+    const { frontmatter, code } = post;
+    return json({ frontmatter, code });
+  } else {
+    throw new Response('Not found', { status: 404 });
+  }
+};
+
+export default function Post() {
+  const { code, frontmatter } = useLoaderData<LoaderData>();
+  const Component = useMemo(() => getMDXComponent(code), [code]);
+  const { slug, title, image, publishedAt, tags } = frontmatter;
+
+  return (
+    <>
+      <header>
+        <div className="overflow-hidden rounded-lg">
+          <img
+            //   onClick={() => handleModle(item?.id)}
+            className="w-full transform cursor-pointer rounded-lg transition duration-200 ease-in-out hover:scale-110"
+            src={image || imgPlaceholder}
+            alt=""
+          />
+        </div>
+
+        <div className="text-tiny text-gray-lite mt-4 flex dark:text-[#A6A6A6]">
+          <span>{publishedAt}</span>
+          <span className="after:bg-gray-lite relative transform pl-6 after:absolute after:left-2 after:top-[50%] after:h-1 after:w-1 after:-translate-y-1/2 after:rounded-full">
+            {tags.join(', ')}
+          </span>
+        </div>
+
+        <h3
+          // onClick={() => setIsOpen(true)}
+          className="mt-3 cursor-pointer pr-4 text-xl font-medium transition duration-300 hover:text-[#FA5252] dark:text-white dark:hover:text-[#FA5252]"
+        >
+          {title}
+        </h3>
+      </header>
+      <main className="text-white">
+        <Component components={MdxComponents} />
+      </main>
+      <Comments />
+    </>
+  );
+}
+```
+
+#### For css of codeblock and markdown
+
+```css fileName=code.css
+pre {
+  overflow-x: auto;
+  position: relative;
+}
+
+code {
+  background-color: var(--color-code-background);
+  color: var(--color-code-text);
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+}
+
+pre code {
+  padding: 0;
+}
+
+/**
+ * Inspired by gatsby remark prism - https://www.gatsbyjs.com/plugins/gatsby-remark-prismjs/
+ * 1. Make the element just wide enough to fit its content.
+ * 2. Always fill the visible space in .code-highlight.
+ */
+
+.code-filename {
+  margin-top: -0.75rem;
+  padding: 1em 2em;
+  background-color: var(--color-code-background-file);
+  font-size: 0.8rem;
+}
+/* 
+.code-highlight {
+  float: left; 
+  min-width: 100%;
+} */
+
+.code-line {
+  display: block;
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-left: -16px;
+  margin-right: -16px;
+  border-left-width: 4px;
+  border-left-color: rgba(31, 41, 55, 0); /* Set code block color */
+}
+
+.code-line:hover {
+  background-color: var(--color-code-line-hover);
+}
+
+.code-line.inserted {
+  background-color: rgba(16, 185, 129, 0.2); /* Set inserted line (+) color */
+}
+
+.code-line.deleted {
+  background-color: rgba(239, 68, 68, 0.2); /* Set deleted line (-) color */
+}
+
+.highlight-line {
+  margin-left: -16px;
+  margin-right: -16px;
+  background-color: rgba(55, 65, 81, 0.5); /* Set highlight bg color */
+  border-left-width: 4px;
+  border-left-color: rgb(59, 130, 246); /* Set highlight accent border color */
+}
+
+.line-number::before {
+  display: inline-block;
+  width: 1rem;
+  text-align: right;
+  margin-right: 16px;
+  margin-left: -8px;
+  color: rgb(156, 163, 175); /* Line number color */
+  content: attr(line);
+}
+
+.toc {
+  margin-top: 1rem;
+  border: 1px solid white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.toc-level-2 {
+  padding-left: 1rem;
+}
+```
+
+- code highlight
+
+```css fileName=codeblock.css
+pre[class*='language-'],
+code[class*='language-'] {
+  color: #d4d4d4;
+  font-size: 13px;
+  text-shadow: none;
+  font-family: Menlo, Monaco, Consolas, 'Andale Mono', 'Ubuntu Mono',
+    'Courier New', monospace;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  line-height: 1.5;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+pre[class*='language-']::selection,
+code[class*='language-']::selection,
+pre[class*='language-'] *::selection,
+code[class*='language-'] *::selection {
+  text-shadow: none;
+  background: #264f78;
+}
+
+@media print {
+  pre[class*='language-'],
+  code[class*='language-'] {
+    text-shadow: none;
+  }
+}
+
+pre[class*='language-'] {
+  padding: 1em;
+  margin: 0.5em 0;
+  overflow: auto;
+  background: #1e1e1e;
+}
+
+:not(pre) > code[class*='language-'] {
+  padding: 0.1em 0.3em;
+  border-radius: 0.3em;
+  color: #db4c69;
+  background: #1e1e1e;
+}
+/*********************************************************
+* Tokens
+*/
+.namespace {
+  opacity: 0.7;
+}
+
+.token.doctype .token.doctype-tag {
+  color: #569cd6;
+}
+
+.token.doctype .token.name {
+  color: #9cdcfe;
+}
+
+.token.comment,
+.token.prolog {
+  color: #6a9955;
+}
+
+.token.punctuation,
+.language-html .language-css .token.punctuation,
+.language-html .language-javascript .token.punctuation {
+  color: #d4d4d4;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.inserted,
+.token.unit {
+  color: #b5cea8;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.deleted {
+  color: #ce9178;
+}
+
+.language-css .token.string.url {
+  text-decoration: underline;
+}
+
+.token.operator,
+.token.entity {
+  color: #d4d4d4;
+}
+
+.token.operator.arrow {
+  color: #569cd6;
+}
+
+.token.atrule {
+  color: #ce9178;
+}
+
+.token.atrule .token.rule {
+  color: #c586c0;
+}
+
+.token.atrule .token.url {
+  color: #9cdcfe;
+}
+
+.token.atrule .token.url .token.function {
+  color: #dcdcaa;
+}
+
+.token.atrule .token.url .token.punctuation {
+  color: #d4d4d4;
+}
+
+.token.keyword {
+  color: #569cd6;
+}
+
+.token.keyword.module,
+.token.keyword.control-flow {
+  color: #c586c0;
+}
+
+.token.function,
+.token.function .token.maybe-class-name {
+  color: #dcdcaa;
+}
+
+.token.regex {
+  color: #d16969;
+}
+
+.token.important {
+  color: #569cd6;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.constant {
+  color: #9cdcfe;
+}
+
+.token.class-name,
+.token.maybe-class-name {
+  color: #4ec9b0;
+}
+
+.token.console {
+  color: #9cdcfe;
+}
+
+.token.parameter {
+  color: #9cdcfe;
+}
+
+.token.interpolation {
+  color: #9cdcfe;
+}
+
+.token.punctuation.interpolation-punctuation {
+  color: #569cd6;
+}
+
+.token.boolean {
+  color: #569cd6;
+}
+
+.token.property,
+.token.variable,
+.token.imports .token.maybe-class-name,
+.token.exports .token.maybe-class-name {
+  color: #9cdcfe;
+}
+
+.token.selector {
+  color: #d7ba7d;
+}
+
+.token.escape {
+  color: #d7ba7d;
+}
+
+.token.tag {
+  color: #569cd6;
+}
+
+.token.tag .token.punctuation {
+  color: #808080;
+}
+
+.token.cdata {
+  color: #808080;
+}
+
+.token.attr-name {
+  color: #9cdcfe;
+}
+
+.token.attr-value,
+.token.attr-value .token.punctuation {
+  color: #ce9178;
+}
+
+.token.attr-value .token.punctuation.attr-equals {
+  color: #d4d4d4;
+}
+
+.token.entity {
+  color: #569cd6;
+}
+
+.token.namespace {
+  color: #4ec9b0;
+}
+/*********************************************************
+* Language Specific
+*/
+
+pre[class*='language-javascript'],
+code[class*='language-javascript'],
+pre[class*='language-jsx'],
+code[class*='language-jsx'],
+pre[class*='language-typescript'],
+code[class*='language-typescript'],
+pre[class*='language-tsx'],
+code[class*='language-tsx'] {
+  color: #9cdcfe;
+}
+
+pre[class*='language-css'],
+code[class*='language-css'] {
+  color: #ce9178;
+}
+
+pre[class*='language-html'],
+code[class*='language-html'] {
+  color: #d4d4d4;
+}
+
+.language-regex .token.anchor {
+  color: #dcdcaa;
+}
+
+.language-html .token.punctuation {
+  color: #808080;
+}
+/*********************************************************
+* Line highlighting
+*/
+pre[class*='language-'] > code[class*='language-'] {
+  position: relative;
+  z-index: 1;
+}
+
+.line-highlight.line-highlight {
+  background: #f7ebc6;
+  box-shadow: inset 5px 0 0 #f7d87c;
+  z-index: 0;
+}
+```
