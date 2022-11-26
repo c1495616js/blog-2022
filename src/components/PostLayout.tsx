@@ -5,6 +5,7 @@ import PageTitle from '@/components/PageTitle';
 import PostBody from '@/components/PostBody';
 import TableOfContents from '@/components/TableOfContents';
 import formatDate from '@/lib/formatDate';
+import Comment from '@/components/Comment';
 
 export interface PostForPostLayout {
   date: string;
@@ -76,6 +77,7 @@ export default function PostLayout({
 
         {/* footer */}
         <div className="divide-y divide-gray-200 pb-8 transition-colors dark:divide-gray-700">
+          <Comment />
           <footer>
             <div className="flex flex-col gap-4 pt-4 text-base font-medium sm:flex-row sm:justify-between xl:gap-8 xl:pt-8">
               {prevPost ? (
