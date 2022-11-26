@@ -3,6 +3,7 @@ import {
   LightBulbIcon,
   MoonIcon,
   SunIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import {
   ActionId,
@@ -41,6 +42,14 @@ export default function CommandPalette({ children }: Props) {
         name: 'Page',
         priority: Priority.HIGH,
       },
+    },
+    // Search Posts
+    {
+      id: 'search-posts',
+      name: 'Posts',
+      keywords: 'search find posts writing words blog articles thoughts',
+      icon: <MagnifyingGlassIcon className="h-6 w-6" />,
+      section: 'Search Posts',
     },
     // Operation section
     // - Theme toggle
