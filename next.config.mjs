@@ -24,6 +24,7 @@ const nextConfig = {
   images: {
     // Enable modern image formats
     formats: ['image/avif', 'image/webp'],
+    domains: ['images.unsplash.com', 'media-exp1.licdn.com'],
   },
 };
 
