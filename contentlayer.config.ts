@@ -26,6 +26,9 @@ export const Post = defineDocumentType(() => ({
       type: 'date',
       required: true,
     },
+    isPublished: {
+      type: 'boolean',
+    },
     socialImage: {
       type: 'string',
     },
