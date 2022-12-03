@@ -1,0 +1,55 @@
+---
+title: Regex
+description: "Let's learn regular expressions"
+socialImage: ''
+publishedAt: 2022-11-29
+tags: []
+type: Post
+isPublished: true
+---
+
+## Tools
+
+- [regex 101](https://regex101.com/)
+
+## Quantifiers
+
+- `?`: 0 or 1 time.
+- `+`: 1 or more times.
+- `*`: 0 or more times.
+- `\`: backslash escape
+  - ? \* . {} [] () ^ $ (These need to be escaped)
+- `{ }`: curly braces
+  - `{1,3}`: between one and three times (inclusive)
+  - `{3}`: exactly three times
+  - `{3,}`: three or more times
+
+### Examples
+
+- `/he+y/`: hey, heey, heeeeeey
+
+## Collections, Ranges, Negation
+
+### Collections
+
+- `[ ]`:
+  - one of any of these characters
+  - one character after the other with no separation
+  - can add quantifier after to indicate how many from collection
+
+### Ranges
+
+- Inside a collection (`[]`)
+- Use a hyphen (`-`) to create a range
+- ex: `[0123456789ABCDEF]` --> `[0-9A-F]`
+
+### Negation
+
+- `[^<place_holder>]`: anything but `<place_holder>`
+
+## Character Classes
+
+- `\s`: whitespace, `[\r\n\t\v\f]`
+- `\S` (capital S): not whitespace, `[^\r\n\t\v\f]`
+- `\d`: digit, `[0-9]`
+- `\D`: not digit, `[^0-9]`
