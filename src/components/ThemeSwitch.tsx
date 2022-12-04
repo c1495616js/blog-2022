@@ -1,10 +1,11 @@
 import { useTheme } from 'next-themes';
+import { useTheme as useDsmTheme } from '@c1495616js/dsm';
 import { useEffect, useState } from 'react';
 
 const ThemeSwitch = () => {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
-
+  const { toggleDark, dark: dsmTheme } = useDsmTheme();
   // When mounted on client, now we can show the UI
   useEffect(() => setMounted(true), []);
 
@@ -15,7 +16,10 @@ const ThemeSwitch = () => {
       aria-label="Toggle Dark Mode"
       type="button"
       className="h-10 w-10 rounded p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 sm:h-12 sm:w-12 sm:p-3"
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      onClick={() => {
+        setTheme(isDark ? 'light' : 'dark');
+        toggleDark();
+      }}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

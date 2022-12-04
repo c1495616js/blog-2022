@@ -12,6 +12,7 @@
     "new-post": "hygen post new"
   },
   "dependencies": {
+    "@c1495616js/dsm": "^1.0.8",
     "@giscus/react": "^2.2.4",
     "@heroicons/react": "^2.0.13",
     "@remark-embedder/core": "^3.0.1",
@@ -24,6 +25,7 @@
     "date-fns": "^2.29.3",
     "eslint-config-next": "13.0.2",
     "feed": "^4.2.2",
+    "framer-motion": "^7.6.18",
     "github-slugger": "^2.0.0",
     "image-size": "^1.0.2",
     "kbar": "0.1.0-beta.38",
