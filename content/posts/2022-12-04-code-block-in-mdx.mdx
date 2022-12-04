@@ -1,0 +1,138 @@
+---
+title: Code Block in mdx
+description: 'To collect all options for a code block in mdx'
+socialImage: ''
+publishedAt: 2022-12-04
+tags: []
+type: Post
+isPublished: true
+---
+
+This is a note to document the syntax of the code block in mdx.
+
+## Syntax
+
+````
+```[diff-?][language]:[file_name] [decorator_1] [decorator_2] ...
+
+```
+````
+
+## Decorators
+
+### - Show Line Numbers
+
+#### Syntax
+
+```md
+showLineNumbers
+```
+
+#### Example
+
+````
+```tsx showLineNumbers
+````
+
+```tsx showLineNumbers
+import '@/styles/globals.css';
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import { ThemeProvider } from 'next-themes';
+```
+
+### - Highlight Code Ranges
+
+#### Syntax
+
+```md
+{number, number_start-number_end}
+ex: {5,15-17}
+```
+
+#### Example
+
+````
+```tsx showLineNumbers {5,15-17}
+````
+
+```tsx showLineNumbers {5,15-17}
+import '@/styles/globals.css';
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import { ThemeProvider } from 'next-themes';
+import LayoutWrapper from '@/components/LayoutWrapper';
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <ThemeProvider attribute="class">
+      <Head>
+        <meta name="viewport" content="viewport-fit=cover" />
+      </Head>
+      <LayoutWrapper>
+        <Component {...pageProps} />
+      </LayoutWrapper>
+    </ThemeProvider>
+  );
+}
+```
+
+### - File Name
+
+#### Syntax
+
+```md
+[language]:[file_name]
+```
+
+#### Example
+
+````
+```tsx:App.tsx
+````
+
+```tsx:App.tsx
+import '@/styles/globals.css';
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import { ThemeProvider } from 'next-themes';
+import LayoutWrapper from '@/components/LayoutWrapper';
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <ThemeProvider attribute="class">
+      <Head>
+        <meta name="viewport" content="viewport-fit=cover" />
+      </Head>
+      <LayoutWrapper>
+        <Component {...pageProps} />
+      </LayoutWrapper>
+    </ThemeProvider>
+  );
+}
+```
+
+### - Git Diff
+
+#### Syntax
+
+```md
+diff-[language]
+```
+
+#### Example
+
+````
+```diff-js:App.js showLineNumbers {3-4}
+
+And
+
+- Line
++ Line
+````
+
+```diff-js:App.js showLineNumbers {3-4}
+const a = 1;
+- a = 2;
++ a = 2;
+a = 3;
+$ echo "Hello world!"
+```
