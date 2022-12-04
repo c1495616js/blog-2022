@@ -10,6 +10,10 @@ import { ThemeProvider } from 'next-themes';
 import { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import { useEffect } from 'react';
+import {
+  ThemeProvider as DsmThemeProvider,
+  globalStyles,
+} from '@c1495616js/dsm';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { siteConfigs } from '@/configs/siteConfigs';
@@ -27,6 +31,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     router.events.on('routeChangeError', () => NProgress.done());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  globalStyles();
 
   return (
     <ThemeProvider attribute="class">
@@ -76,9 +82,11 @@ function MyApp({ Component, pageProps }: AppProps) {
             },
           ]}
         />
-        <LayoutWrapper>
-          <Component {...pageProps} />
-        </LayoutWrapper>
+        <DsmThemeProvider>
+          <LayoutWrapper>
+            <Component {...pageProps} />
+          </LayoutWrapper>
+        </DsmThemeProvider>
       </CommandPalette>
     </ThemeProvider>
   );
