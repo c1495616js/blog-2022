@@ -11,7 +11,6 @@ export default function CustomImage({
   alt,
   ...otherProps
 }: Props) {
-  console.log(width, height);
   if (!src) return null;
   if (typeof src === 'string' && (!height || !width)) {
     return (
