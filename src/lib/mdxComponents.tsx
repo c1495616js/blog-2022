@@ -1,3 +1,5 @@
+import React from 'react';
+
 import CustomPre from '@/components/CustomPre';
 import {
   CustomH1,
@@ -20,6 +22,9 @@ const mdxComponents = {
   pre: CustomPre,
   a: CustomLink,
   img: CustomImage,
+  p: ({ children }: React.PropsWithChildren) => (
+    <div suppressHydrationWarning={true}>{children}</div>
+  ),
 };
 
 export default mdxComponents;

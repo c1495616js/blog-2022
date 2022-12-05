@@ -1,0 +1,39 @@
+---
+title: Let's Talk About Javascript
+description: ''
+socialImage: ''
+publishedAt: 2022-12-05
+tags: []
+type: Post
+isPublished: true
+---
+
+Let's learn JS from the very beginning as it's very important to have a great foundation.
+
+## Refs
+
+- [強化 JavaScript 之 - 程式語感是可以磨練成就的](https://ithelp.ithome.com.tw/users/20116883/ironman/4979)
+
+## Day 1 - JS Engine
+
+### Outline
+
+- JS script -- JS Engine --> Machine codes.
+- JS engine optimization
+
+### Why we need JS Engine
+
+Because JS is the advanced programming language, it could be executed by computer directly.
+Therefore, it needs to transform the machine code via JS engine.
+
+Then, where is the JS Engine? Answer: `inside of The Browser`.
+Ex: V8 of Google Chrome, JavaScriptCore of Safari and SpiderMonkey of Firefox.
+
+And now most JS engines combine both the JIT Compiler(Just in-time compiler) of Interpreter and Compilier.
+
+### The Process of V8 engine.
+
+1. A module `Parser` of V8 will parse the JS syntax to `AST`.
+   [AST Explorer](https://astexplorer.net/)
+
+![](/images/2022-12-05-let-us-talk-about-javascript/2022-12-05-15-08-36.png)
