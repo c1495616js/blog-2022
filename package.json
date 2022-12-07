@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@c1495616js/dsm": "^1.0.8",
+    "@c1495616js/react-json-hook-form": "^1.0.0",
     "@giscus/react": "^2.2.4",
     "@heroicons/react": "^2.0.13",
     "@remark-embedder/core": "^3.0.1",
