@@ -1,0 +1,23 @@
+---
+title: Node Event Loop
+description: Let's discuss the event loop in node.js
+socialImage: ''
+publishedAt: 2022-12-09
+tags: []
+type: Post
+isPublished: false
+---
+
+## Process
+
+- `node index.js`:
+
+1. Process and execute code in index.js file.
+2. Do we still have work to do? Look at timers, OS tasks, threadpool.
+3. If step 2 is no, then Exit the program.
+4. Run setTimout's, setInterval's.
+5. Run callbacks for any os tasks or threadpool tasks that are done. (This is 99% of our code.)
+
+## Refs
+
+- [Udemy: Node JS Advanced Concepts](https://www.udemy.com/course/advanced-node-for-developers)
