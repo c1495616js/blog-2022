@@ -1,0 +1,77 @@
+---
+title: Let's talk about React Testing
+description: ''
+socialImage: ''
+publishedAt: 2023-01-09
+tags: ['react', 'testing']
+type: Post
+isPublished: true
+---
+
+# Introduction to React Testing Library
+
+## Jest Setup
+
+[WIP]
+
+## Priority Order for Queries
+
+> Your test should resemble how users interact with your code (component, page, etc.) as much as possible.
+
+[Priority Guideline](https://testing-library.com/docs/queries/about#priority)
+
+1. `getByRole`: [ARIA attributes](https://www.w3.org/TR/html-aria/#docconformance)
+2. `getByLabelText`
+3. `getByPlaceholderText`
+4. `getByText`
+5. `getByDisplayValue`
+6. `getByAltText`
+
+---These 6 above should cover most cases
+
+7. `getByTitle`
+8. `getByTestId`
+
+## TextMatch
+
+- `string`
+
+  ```jsx
+  <div>Hello World</div>;
+
+  screen.getByText('Hello World'); // full string match
+  screen.getByText('llo Worl', { exact: false }); // substring match
+  screen.getByText('hello world', { exact: false }); // ignore case
+  ```
+
+- `regex`
+
+  ```jsx
+  <div>Hello World</div>;
+
+  screen.getByText(/World/); // substring match
+  screen.getByText(/world/i); // substring match, ignore case
+  screen.getByText(/^hello world$/i); // full string match, ignore case
+  ```
+
+- `function` - custom function
+
+  ```tsx
+  (content?: string, element?: Element | null) => boolean;
+
+  <div>Hello World</div>;
+
+  screen.getByText((content) => content.startsWith('Hello'));
+  ```
+
+## `queryBy`
+
+## `findBy`
+
+## Resources
+
+- [React Testing Tutorial](https://www.youtube.com/playlist?list=PLC3y8-rFHvwirqe1KHFCHJ0RqNuN61SJd)
+
+- [Testing Library](https://testing-library.com/)
+
+- [Jest](https://jestjs.io/)
