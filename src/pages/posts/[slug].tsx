@@ -9,7 +9,11 @@ import PostLayout, {
   PostForPostLayout,
   RelatedPostForPostLayout,
 } from '@/components/PostLayout';
-import { allPosts, allPostsNewToOld } from '@/lib/contentLayerAdapter';
+import {
+  allPosts,
+  allPostsNewToOld,
+  allCategoriesPostsNewToOld,
+} from '@/lib/contentLayerAdapter';
 import {
   getCommandPalettePosts,
   PostForCommandPalette,
@@ -46,23 +50,31 @@ export const getStaticPaths: GetStaticPaths = () => {
 export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
   const commandPalettePosts = getCommandPalettePosts();
 
-  const postIndex = allPostsNewToOld.findIndex(
+  let allPosts = allPostsNewToOld;
+
+  let postIndex = allPostsNewToOld.findIndex(
     (post) => post.slug === params?.slug
   );
   if (postIndex === -1) {
-    return {
-      notFound: true,
-    };
+    postIndex = allCategoriesPostsNewToOld().findIndex(
+      (post) => post.slug === params?.slug
+    );
+    if (postIndex === -1) {
+      return {
+        notFound: true,
+      };
+    }
+    allPosts = allCategoriesPostsNewToOld();
   }
-  const prevFull = allPostsNewToOld[postIndex + 1] || null;
+  const prevFull = allPosts[postIndex + 1] || null;
   const prevPost: RelatedPostForPostLayout = prevFull
     ? { title: prevFull.title, path: prevFull.path }
     : null;
-  const nextFull = allPostsNewToOld[postIndex - 1] || null;
+  const nextFull = allPosts[postIndex - 1] || null;
   const nextPost: RelatedPostForPostLayout = nextFull
     ? { title: nextFull.title, path: nextFull.path }
     : null;
-  const postFull = allPostsNewToOld[postIndex];
+  const postFull = allPosts[postIndex];
   const post: PostForPostPage = {
     title: postFull.title,
     publishedAt: postFull.publishedAt,

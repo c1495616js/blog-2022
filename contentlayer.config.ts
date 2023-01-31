@@ -32,6 +32,10 @@ export const Post = defineDocumentType(() => ({
     socialImage: {
       type: 'string',
     },
+    categories: {
+      type: 'list',
+      of: { type: 'string' },
+    },
   },
   computedFields: {
     readingTime: {

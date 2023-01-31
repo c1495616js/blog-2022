@@ -1,0 +1,51 @@
+---
+title: React hooks
+description: ''
+socialImage: ''
+publishedAt: 2023-01-28
+tags: []
+type: Post
+isPublished: true
+categories: ['library']
+---
+
+> React Hooks were introduced in version 16.8.0 as function component counterpart of calss component lifecyles.
+> It totally changed the world of react.
+> For more information, please see the officail [React Hooks API Reference](https://reactjs.org/docs/hooks-reference.html)
+
+## Hooks flow
+
+Understanding the flow is very important. Especailly for `useEffect`.
+At `Update` phrase, will run `cleanup effect` from the last time return.
+And the `Run Effects`` phase is executed last.
+
+- Notice that `Mount` will not run `cleanup effects`.
+- Notice that `Unmount` only runs `cleanup effects`.
+  ![](/images/2023-01-28-react-hooks/2023-01-28-13-42-02.png)
+
+Here is a code example that explains this flow:
+
+```tsx
+export const MyComponent: FC = () => {
+  // 1. Run Lazy initializers (i.e. () => 0)
+  const [state, setState] = useState(() => 0);
+
+  const previousStateRef = useRef();
+
+  useEffect(() => {
+    // 3. Run effect
+    previousStateRef.current = state;
+  }); // no deps array, because we want this to be called on every render
+
+  // 2. Render
+  return (
+    <>
+      Prev: {previousStateRef.current ?? 'undefined'}
+      <br />
+      Current: {state}
+      <br />
+      <button onClick={() => setState(1)}>Update</button>
+    </>
+  );
+};
+```

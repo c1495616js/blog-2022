@@ -5,6 +5,7 @@ publishedAt: '2021-11-12'
 tags: ['react', 'typescript']
 isPublished: true
 type: Post
+categories: ['library']
 ---
 
 This is all credit to https://ithelp.ithome.com.tw/articles/10265514.
@@ -197,6 +198,68 @@ type PickObj<T, U extends keyof T> = T[U];
 
 ```ts
 type NewType = X extends Y ? T : F;
+```
+
+## Day - 9 Distributive Conditional Types - Extract & Exclude
+
+```ts
+// T: type U: union
+
+// Extract from T those types that are assignable to U
+type Extract<T, U> = T extends U ? T : never;
+
+// Exclude from T those types that are assignable to U
+type Exclude<T, U> = T extends U ? never : T;
+```
+
+### Examples
+
+```ts
+// https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union
+
+type T1 = Extract<'a' | 'b' | 'c', 'a'>; //  'a'
+type T2 = Extract<'a' | 'b' | 'c', 'a' | 'b'>; // 'a' | 'b'
+type T3 = Extract<string | number | (() => void), Function>; // () => void
+type T4 = Extract<'a' | 'b' | 'c', 'a' | 'f'>; // 'a'
+```
+
+```ts
+// https://www.typescriptlang.org/docs/handbook/utility-types.html#excludetype-excludedunion
+
+type T1 = Exclude<'a' | 'b' | 'c', 'a'>; //  'b' | 'c'
+type T2 = Exclude<'a' | 'b' | 'c', 'a' | 'b'>; // 'c'
+type T3 = Exclude<string | number | (() => void), Function>; // string | number
+type T4 = Exclude<'a' | 'b' | 'c', 'a' | 'f'>; // 'b' | 'c
+```
+
+### Explanation
+
+```ts
+type T1 = Extract<'a' | 'b' | 'c', 'a'>; //  'a'
+= Extract<'a', 'a'> | Extract<'b', 'a'> | Extract<'c', 'a'>
+= 'a' | never | never
+= 'a'
+```
+
+### Advance
+
+- `NonNullable`
+
+```ts
+type NonNullable<T> = T extends null | undefined ? never : T;
+```
+
+- `NoDistributeExtract`
+  If you don't want `distribute`, can wrap with `[]`.
+
+```ts
+type NoDistributeExtract<T, U> = [T] extends [U] ? T : never;
+
+// example
+type NoDistributeExtractReturn1 = NoDistributeExtract<
+  'a' | 'b',
+  'a' | 'b' | 'c'
+>; // 'a' | 'b'
 ```
 
 ## Refs
