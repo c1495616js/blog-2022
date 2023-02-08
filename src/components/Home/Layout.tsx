@@ -159,6 +159,19 @@ export default function Layout({ children, setIsNavbar, isNavbar }: any) {
                 </button>
                 <button
                   className={`w-full border-b px-5  py-4 text-left transition-all ${
+                    isNavbar === 'posts'
+                      ? 'border-b-2 border-[#FEA55F] text-white'
+                      : 'border-b-[#1E2D3D]'
+                  }`}
+                  onClick={() => {
+                    setIsNavbar('posts');
+                    setNavbar(false);
+                  }}
+                >
+                  <Link href="/posts">_posts</Link>
+                </button>
+                <button
+                  className={`w-full border-b px-5  py-4 text-left transition-all ${
                     isNavbar === 'about-me'
                       ? 'border-b-2 border-[#FEA55F] text-white'
                       : 'border-b-[#1E2D3D]'
