@@ -6,8 +6,6 @@ import {
 } from '@c1495616js/react-json-hook-form';
 import type { FieldSchema } from '@c1495616js/react-json-hook-form';
 
-import Accordian from '@/components/byo/accordian';
-
 const fields: FieldSchema[] = [
   {
     fieldName: 'name',
@@ -49,8 +47,6 @@ const Dsm = () => {
         <h2>JSON Form Builder</h2>
         <Form fields={fields} customSubmit={(data) => console.log(data)} />
       </Box>
-
-      <Accordian />
     </div>
   );
 };
