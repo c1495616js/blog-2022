@@ -8,7 +8,7 @@ type: Post
 categories: ['library']
 ---
 
-This is all credit to https://ithelp.ithome.com.tw/articles/10265514.
+This is all credit to [PJ Chender](https://ithelp.ithome.com.tw/articles/10265514).
 Just the summarize from this excellent article.
 
 ## Day 2 - Generics
@@ -262,7 +262,49 @@ type NoDistributeExtractReturn1 = NoDistributeExtract<
 >; // 'a' | 'b'
 ```
 
+## Day 10 - infer (ReturnType & Parameters)
+
+```ts
+// Obtain the return type of a function type
+type ReturnType<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => infer R
+  ? R
+  : any;
+```
+
+### Examples
+
+- `ReturnType`
+
+If `T` is subset of `function type` then return the `return type`.
+
+```ts
+type T1 = ReturnType<() => string>; // string
+type T2 = ReturnType<(s: string) => number[]>; // number[]
+type T3 = ReturnType<string>; // any
+```
+
+- `Parameters`
+
+```ts
+type Parameters<T extends (...args: any) => any> = T extends (
+  ...args: infer P
+) => any
+  ? P
+  : never;
+```
+
+```ts
+type T1 = Parameters<(a: number, b: string) => number>; // [a: number, b: string]
+type T2 = Parameters<(a: number[]) => number>; // [a: number[]]
+
+type T3 = Parameters<(a: { firstName: string; lastName: string }) => string>; // [a: { firstName: string; lastName: string; }]
+
+type T4 = Parameters<(...a: number[]) => number>; // number[]
+```
+
 ## Refs
 
-- https://github.com/sindresorhus/type-fest
-- https://ithelp.ithome.com.tw/articles/10265514
+- [type-fest](https://github.com/sindresorhus/type-fest)
+- [PJ Chender](https://ithelp.ithome.com.tw/articles/10265514)

@@ -1,0 +1,73 @@
+---
+title: Slidev
+description: 'Build the slide by code'
+socialImage: ''
+publishedAt: 2023-02-08
+tags: []
+type: Post
+isPublished: true
+---
+
+![](/images/2023-02-08-slidev/2023-02-08-09-42-06.png)
+
+Developer love to write in markdown. How about do a presentation with markdown too?!
+So, today we are going to introduce this amazing tool, `Slidev`.
+
+- [Slidev](https://sli.dev/)
+
+## Installation
+
+- Simply run the following command, the CLI will help you to build and run the project.
+
+```bash
+npm init slidev@latest
+
+# or
+
+yarn create slidev
+```
+
+## Development
+
+- starting point
+
+Build everything here at `slides.md` file with markdown.
+
+![](/images/2023-02-08-slidev/2023-02-08-09-44-50.png)
+
+- Import other md file
+
+```md
+---
+
+src: ./pages/multiple-entries.md
+hide: false
+```
+
+![](/images/2023-02-08-slidev/2023-02-08-09-46-27.png)
+
+- VSCode Extension
+
+![](/images/2023-02-08-slidev/2023-02-08-09-48-51.png)
+
+You can easily preview the slide with this extension.
+
+![](/images/2023-02-08-slidev/2023-02-08-09-51-01.png)
+
+## Export
+
+- We can export to PDF.
+
+Install the package first
+
+```bash
+yarn add -D  playwright-chromium
+```
+
+Then run
+
+```bash
+yarn export
+```
+
+![](/images/2023-02-08-slidev/2023-02-08-09-56-03.png)
