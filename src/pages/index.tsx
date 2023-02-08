@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import { GetStaticProps } from 'next';
 import { ArticleJsonLd } from 'next-seo';
+import React from 'react';
 
 import PostList, { PostForPostList } from '@/components/PostList';
 import { allPostsNewToOld } from '@/lib/contentLayerAdapter';
@@ -12,6 +13,7 @@ import {
   PostForCommandPalette,
 } from '@/components/CommandPalette/getCommandPalettePosts';
 import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
+import { Home, Layout } from '@/components/Home';
 
 type PostForIndexPage = PostForPostList;
 
@@ -36,9 +38,9 @@ export const getStaticProps: GetStaticProps<Props> = () => {
   return { props: { posts, commandPalettePosts } };
 };
 
-const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
+const HomePage: NextPage<Props> = ({ posts, commandPalettePosts }) => {
   useCommandPalettePostActions(commandPalettePosts);
-
+  const [isNavbar, setIsNavbar] = React.useState('/');
   return (
     <>
       <ArticleJsonLd
@@ -51,23 +53,11 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
         description={siteConfigs.description}
       />
 
-      <div className="prose my-12 space-y-2 transition-colors dark:prose-dark md:space-y-5 md:prose-lg">
-        <h1 className="text-center sm:text-left">Hey，I am Jerry.</h1>
-        <p>
-          I'm a web developer from Taiwan, living in Canada. I am interested in
-          React.js and Typescript.
-        </p>
-      </div>
-
-      <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
-        <div className="prose prose-lg my-8 dark:prose-dark">
-          <h2>Latest Posts</h2>
-        </div>
-
-        <PostList posts={posts} />
-      </div>
+      <Layout setIsNavbar={setIsNavbar} isNavbar={isNavbar}>
+        <Home />
+      </Layout>
     </>
   );
 };
 
-export default Home;
+export default HomePage;

@@ -9,9 +9,7 @@ const LayoutWrapper = ({ children }: React.PropsWithChildren) => {
       <div>
         <Header />
 
-        <SectionContainer>
-          <main className="mb-auto">{children}</main>
-        </SectionContainer>
+        <main className="mb-auto">{children}</main>
       </div>
 
       <Footer />

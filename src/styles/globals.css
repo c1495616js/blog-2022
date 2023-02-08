@@ -1,3 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Bitter:wght@100;200;300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  * {
+    font-family: 'Fira Code', monospace;
+  }
+
+  pre {
+    @apply !bg-transparent;
+  }
+}
+
+@layer components {
+  .wrapper {
+    @apply h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] md:h-[calc(100vh-2.5rem)] md:w-[calc(100vw-2.5rem)];
+  }
+}
+
+.loader-parent {
+  @apply flex h-full w-full items-center justify-center;
+}
+
+.loader {
+  @apply h-14 w-14 rounded-full border-4 border-white;
+  -webkit-animation: spin-loader 2s linear infinite;
+  animation: spin-loader 2s linear infinite;
+}
+
+@-webkit-keyframes spin-loader {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-loader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

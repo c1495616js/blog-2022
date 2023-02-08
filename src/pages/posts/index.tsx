@@ -3,7 +3,7 @@ import { GetStaticProps } from 'next';
 import { ArticleJsonLd } from 'next-seo';
 
 import PostList, { PostForPostList } from '@/components/PostList';
-import { allCategoriesPostsNewToOld } from '@/lib/contentLayerAdapter';
+import { allPostsNewToOld } from '@/lib/contentLayerAdapter';
 import { siteConfigs } from '@/configs/siteConfigs';
 import generateRSS from '@/lib/generateRSS';
 
@@ -12,7 +12,7 @@ import {
   PostForCommandPalette,
 } from '@/components/CommandPalette/getCommandPalettePosts';
 import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
-import Link from 'next/link';
+import SectionContainer from '@/components/SectionContainer';
 
 type PostForIndexPage = PostForPostList;
 
@@ -24,7 +24,7 @@ type Props = {
 export const getStaticProps: GetStaticProps<Props> = () => {
   const commandPalettePosts = getCommandPalettePosts();
 
-  const posts = allCategoriesPostsNewToOld().map((post) => ({
+  const posts = allPostsNewToOld.map((post) => ({
     slug: post.slug,
     publishedAt: post.publishedAt,
     title: post.title,
@@ -37,7 +37,7 @@ export const getStaticProps: GetStaticProps<Props> = () => {
   return { props: { posts, commandPalettePosts } };
 };
 
-const Library: NextPage<Props> = ({ posts, commandPalettePosts }) => {
+const Posts: NextPage<Props> = ({ posts, commandPalettePosts }) => {
   useCommandPalettePostActions(commandPalettePosts);
 
   return (
@@ -51,21 +51,17 @@ const Library: NextPage<Props> = ({ posts, commandPalettePosts }) => {
         authorName={siteConfigs.author}
         description={siteConfigs.description}
       />
+      <SectionContainer>
+        <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
+          <div className="prose prose-lg my-8 dark:prose-dark">
+            <h2>Latest Posts</h2>
+          </div>
 
-      <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
-        <div className="prose prose-lg my-8 dark:prose-dark">
-          <h2>My Frontend Library</h2>
+          <PostList posts={posts} />
         </div>
-
-        <section>
-          Build Your Own Components
-          <Link href="/byo/accordian">Accordian</Link>
-        </section>
-
-        <PostList posts={posts} />
-      </div>
+      </SectionContainer>
     </>
   );
 };
 
-export default Library;
+export default Posts;
