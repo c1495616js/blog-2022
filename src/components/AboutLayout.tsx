@@ -127,14 +127,11 @@ const Folder = () => {
         leaveTo="opacity-0 -translate-y-1"
         className={`flex flex-col gap-2 text-white-faded`}
       >
-        <FolderItemButton icon={<IoLogoJavascript />} href="/about/personal">
-          personal.js
-        </FolderItemButton>
         <FolderItemButton icon={<IoLogoJavascript />} href="/about/work">
           work.js
         </FolderItemButton>
-        <FolderItemButton icon={<SiMarkdown />} href="/about/gear">
-          gear.md
+        <FolderItemButton icon={<IoLogoJavascript />} href="/about/personal">
+          personal.js
         </FolderItemButton>
       </Transition>
     </>
