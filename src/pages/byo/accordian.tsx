@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Accordian } from '@/components/byo';
 import CodeBlock from '@/components/CodeBlock';
+import SectionContainer from '@/components/SectionContainer';
 
 type Props = {};
 
@@ -54,7 +55,7 @@ export default function Accordion({ sections }: Props) {
 
 const AccordianPage = (props: Props) => {
   return (
-    <div>
+    <SectionContainer>
       <Accordian
         sections={[
           {
@@ -79,7 +80,7 @@ const AccordianPage = (props: Props) => {
       />
 
       <CodeBlock highlight="3,7-8">{BasicCodeBlock}</CodeBlock>
-    </div>
+    </SectionContainer>
   );
 };
 

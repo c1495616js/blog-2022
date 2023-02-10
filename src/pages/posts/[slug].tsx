@@ -19,6 +19,7 @@ import {
   PostForCommandPalette,
 } from '@/components/CommandPalette/getCommandPalettePosts';
 import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
+import SectionContainer from '@/components/SectionContainer';
 
 type PostForPostPage = PostForPostLayout & {
   title: string;
@@ -156,9 +157,11 @@ const PostPage: NextPage<Props> = ({
         description={description}
       />
 
-      <PostLayout post={post} prevPost={prevPost} nextPost={nextPost}>
-        <MDXContent components={mdxComponents} />
-      </PostLayout>
+      <SectionContainer>
+        <PostLayout post={post} prevPost={prevPost} nextPost={nextPost}>
+          <MDXContent components={mdxComponents} />
+        </PostLayout>
+      </SectionContainer>
     </>
   );
 };

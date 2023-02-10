@@ -5,6 +5,9 @@ import 'nprogress/nprogress.css';
 import '@/styles/nprogress-custom.scss';
 
 import type { AppProps } from 'next/app';
+import type { ReactElement, ReactNode } from 'react';
+import type { NextPage } from 'next';
+
 import { DefaultSeo } from 'next-seo';
 import { ThemeProvider } from 'next-themes';
 import { useRouter } from 'next/router';
@@ -19,9 +22,20 @@ import LayoutWrapper from '@/components/LayoutWrapper';
 import { siteConfigs } from '@/configs/siteConfigs';
 import CommandPalette from '@/components/CommandPalette';
 
+import { TabContext } from '@/context/tabContext';
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
 NProgress.configure({ showSpinner: false });
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout || ((page) => page);
   const router = useRouter();
 
   // Integrate nprogress
@@ -35,7 +49,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   globalStyles();
 
   return (
-    <ThemeProvider attribute="class">
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <CommandPalette>
         <DefaultSeo
           titleTemplate={`%s | ${siteConfigs.titleShort}`}
@@ -83,9 +97,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           ]}
         />
         <DsmThemeProvider>
-          <LayoutWrapper>
-            <Component {...pageProps} />
-          </LayoutWrapper>
+          <TabContext>
+            <LayoutWrapper>
+              {getLayout(<Component {...pageProps} />)}
+            </LayoutWrapper>
+          </TabContext>
         </DsmThemeProvider>
       </CommandPalette>
     </ThemeProvider>

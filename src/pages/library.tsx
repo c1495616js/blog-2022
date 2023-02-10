@@ -13,6 +13,7 @@ import {
 } from '@/components/CommandPalette/getCommandPalettePosts';
 import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
 import Link from 'next/link';
+import SectionContainer from '@/components/SectionContainer';
 
 type PostForIndexPage = PostForPostList;
 
@@ -51,19 +52,20 @@ const Library: NextPage<Props> = ({ posts, commandPalettePosts }) => {
         authorName={siteConfigs.author}
         description={siteConfigs.description}
       />
+      <SectionContainer>
+        <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
+          <div className="prose prose-lg my-8 dark:prose-dark">
+            <h2>My Frontend Library</h2>
+          </div>
 
-      <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
-        <div className="prose prose-lg my-8 dark:prose-dark">
-          <h2>My Frontend Library</h2>
+          <section>
+            Build Your Own Components
+            <Link href="/byo/accordian">Accordian</Link>
+          </section>
+
+          <PostList posts={posts} />
         </div>
-
-        <section>
-          Build Your Own Components
-          <Link href="/byo/accordian">Accordian</Link>
-        </section>
-
-        <PostList posts={posts} />
-      </div>
+      </SectionContainer>
     </>
   );
 };

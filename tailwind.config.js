@@ -19,6 +19,15 @@ module.exports = {
       colors: {
         primary: colors.red,
         gray: colors.neutral,
+        main: '#1E2D3D',
+        primary2: '#011627',
+        'custom-orange': '#FEA55F',
+        'white-faded': '#A3ACB5',
+      },
+      padding: {
+        4.5: '1.125rem',
+        5.5: '1.375rem',
+        6.5: '1.625rem',
       },
       typography: (theme) => ({
         DEFAULT: {

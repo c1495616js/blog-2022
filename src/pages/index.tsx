@@ -52,10 +52,7 @@ const HomePage: NextPage<Props> = ({ posts, commandPalettePosts }) => {
         authorName={siteConfigs.author}
         description={siteConfigs.description}
       />
-
-      <Layout setIsNavbar={setIsNavbar} isNavbar={isNavbar}>
-        <Home />
-      </Layout>
+      <Home />
     </>
   );
 };

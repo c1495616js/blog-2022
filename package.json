@@ -15,6 +15,7 @@
     "@c1495616js/dsm": "^1.0.8",
     "@c1495616js/react-json-hook-form": "^1.0.0",
     "@giscus/react": "^2.2.4",
+    "@headlessui/react": "^1.7.10",
     "@heroicons/react": "^2.0.13",
     "@react-icons/all-files": "^4.1.0",
     "@remark-embedder/core": "^3.0.1",
