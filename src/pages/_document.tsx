@@ -4,7 +4,7 @@ function MyDocument() {
   return (
     <Html className="dark">
       <Head />
-      <body className="c1495616js-light overflow-x-hidden bg-white text-black antialiased transition-colors dark:bg-gray-900 dark:text-white">
+      <body className="c1495616js-light bg-white text-black antialiased transition-colors overflow-x-hidden overflow-y-hidden dark:bg-gray-900 dark:text-white">
         <script
           key="c1495616js-theme"
           dangerouslySetInnerHTML={{

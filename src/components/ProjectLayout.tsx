@@ -5,25 +5,27 @@ import { useRouter } from 'next/navigation';
 import { Popover, Transition } from '@headlessui/react';
 import { GoTriangleRight } from '@react-icons/all-files/go/GoTriangleRight';
 import { VscCollapseAll } from '@react-icons/all-files/vsc/VscCollapseAll';
-import { HiChevronRight } from '@react-icons/all-files/hi/HiChevronRight';
-import { RiFolder3Fill } from '@react-icons/all-files/ri/RiFolder3Fill';
-import { IoLogoJavascript } from '@react-icons/all-files/io5/IoLogoJavascript';
 import { IoClose } from '@react-icons/all-files/io5/IoClose';
 import { useTabs } from '@/context/tabContext';
+import { GrReactjs } from '@react-icons/all-files/gr/GrReactjs';
+import { SiNextDotJs } from '@react-icons/all-files/si/SiNextDotJs';
 import SlideIn from './animation/SlideIn';
+import { Stack } from '@/configs/projectConfigs';
 
-export default function AboutLayout({
+export default function ProjectLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactElement;
 }) {
+  const [filter, setFilter] = React.useState<Stack | 'all'>('all');
   const { Tab, setTab } = useTabs();
   const pathname = usePathname();
   const router = useRouter();
+
   return (
     <SlideIn>
       <div className="grid h-full grid-cols-12 divide-x divide-main">
-        <Aside />
+        <Aside filter={filter} setFilter={setFilter} />
         <div className="col-span-12 overflow-hidden sm:col-span-10">
           <div className="h-full">
             {Tab.length > 0 && (
@@ -51,7 +53,7 @@ export default function AboutLayout({
               </nav>
             )}
 
-            {children}
+            {React.cloneElement(children, { filter })}
           </div>
         </div>
       </div>
@@ -59,7 +61,7 @@ export default function AboutLayout({
   );
 }
 
-const Aside = () => {
+const Aside = ({ filter, setFilter }: any) => {
   const [open, setOpen] = useState(true);
   return (
     <aside className="col-span-12 h-full select-none sm:col-span-2">
@@ -75,7 +77,7 @@ const Aside = () => {
                 ${open && 'rotate-90'} 
                 transition-transform`}
           />
-          <span>personal info</span>
+          <span>project info</span>
           <VscCollapseAll className="absolute top-1/2 right-4 -translate-y-1/2" />
         </Popover.Button>
         <Transition
@@ -90,7 +92,7 @@ const Aside = () => {
         >
           <Popover.Panel>
             <Popover.Group className="p-4">
-              <Folder />
+              <Folder filter={filter} setFilter={setFilter} />
             </Popover.Group>
           </Popover.Panel>
         </Transition>
@@ -99,28 +101,13 @@ const Aside = () => {
   );
 };
 
-const Folder = () => {
+const Folder = ({ filter, setFilter }: any) => {
   const pathname = usePathname();
-  const [open, setOpen] = useState(pathname?.startsWith('/about/') && true);
+  // const [open, setOpen] = useState(pathname?.startsWith('/projects/') && true);
   return (
     <>
-      <button
-        className={`
-      mb-2 flex w-full items-center gap-2.5 transition-colors 
-      ${open ? 'text-white' : 'text-white-faded'}
-      `}
-        onClick={() => setOpen(!open)}
-      >
-        <HiChevronRight
-          className={`${open && 'rotate-90'} transition-transform`}
-        />
-        <RiFolder3Fill
-          className={`${open ? 'text-[#E99287]' : 'text-[#b36d64]'}`}
-        />
-        <span className="truncate pr-5">bio</span>
-      </button>
       <Transition
-        show={open}
+        show
         enter="transition ease-out duration-200"
         enterFrom="opacity-0 -translate-y-1"
         enterTo="opacity-100 translate-y-0"
@@ -129,11 +116,19 @@ const Folder = () => {
         leaveTo="opacity-0 -translate-y-1"
         className={`flex flex-col gap-2 text-white-faded`}
       >
-        <FolderItemButton icon={<IoLogoJavascript />} href="/about/work">
-          work.js
+        <FolderItemButton
+          icon={<SiNextDotJs />}
+          href="/projects/nextjs"
+          setFilter={() => setFilter('NextJS')}
+        >
+          Next.js
         </FolderItemButton>
-        <FolderItemButton icon={<IoLogoJavascript />} href="/about/personal">
-          personal.js
+        <FolderItemButton
+          icon={<GrReactjs />}
+          href="/projects/reactjs"
+          setFilter={() => setFilter('ReactJS')}
+        >
+          React.js
         </FolderItemButton>
       </Transition>
     </>
@@ -144,10 +139,12 @@ const FolderItemButton = ({
   icon,
   href,
   children,
+  setFilter,
 }: {
   icon: React.ReactNode;
   href: string;
   children: string;
+  setFilter: any;
 }) => {
   const pathname = usePathname();
   const { setTab } = useTabs();
@@ -160,6 +157,7 @@ const FolderItemButton = ({
           if (prev.find((tab) => tab.href === href)) return prev;
           return [...prev, { children, href }];
         });
+        setFilter();
       }}
       className={`flex items-center gap-2.5 pl-6.5 transition-colors ${
         pathname === href && 'text-white'

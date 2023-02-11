@@ -1,6 +1,5 @@
 import NewFooter from '@/components/NewFooter';
 import NewHeader from '@/components/NewHeader';
-import SectionContainer from '@/components/SectionContainer';
 import React from 'react';
 
 const LayoutWrapper = ({ children }: React.PropsWithChildren) => {
@@ -12,7 +11,7 @@ const LayoutWrapper = ({ children }: React.PropsWithChildren) => {
       <div className="wrapper flex flex-col justify-between overflow-hidden rounded-lg border border-main/50 bg-white dark:bg-primary2">
         <NewHeader />
 
-        <main className="h-full w-full self-center overflow-y-auto">
+        <main className="h-[80%] w-full self-center overflow-y-auto pb-10">
           {children}
         </main>
 
